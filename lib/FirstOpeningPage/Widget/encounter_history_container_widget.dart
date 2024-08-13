@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tic_tac_toe/constant.dart';
 
 class EncounterHistoryContainerWidget extends StatelessWidget {
   const EncounterHistoryContainerWidget({super.key});
@@ -7,7 +8,7 @@ class EncounterHistoryContainerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        print("geçmiş");
+        print(pastMatches);
       },
       child: Container(
         width: 150,

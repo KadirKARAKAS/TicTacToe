@@ -18,7 +18,9 @@ class FirstOpeningPageState extends State<FirstOpeningPage> {
       backgroundColor: const Color.fromRGBO(252, 251, 249, 1),
       body: Column(
         children: [
-          AppBarWidget(),
+          AppBarWidget(
+            title: "TicTacToe",
+          ),
           Expanded(
             child: Center(
               child: Column(

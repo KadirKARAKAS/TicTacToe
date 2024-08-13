@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../GameCreationScreen/Page/game_creation_screen.dart';
+
 class StartGameContainerWidget extends StatelessWidget {
   const StartGameContainerWidget({super.key});
 
@@ -7,7 +9,11 @@ class StartGameContainerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        print("helloo");
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GameCreationScreen(),
+            ));
       },
       child: Container(
         width: 150,

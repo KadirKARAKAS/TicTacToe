@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class AppBarWidget extends StatelessWidget {
-  const AppBarWidget({super.key});
+  final String title;
+
+  const AppBarWidget({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -11,12 +11,11 @@ class AppBarWidget extends StatelessWidget {
     return Container(
       width: size.width,
       height: 70,
-      child: Align(
-          alignment: Alignment.center,
-          child: Text(
-            "TicTacToe",
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-          )),
+      alignment: Alignment.center,
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+      ),
     );
   }
 }
