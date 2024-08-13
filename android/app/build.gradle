@@ -46,6 +46,8 @@ android {
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
         multiDexEnabled true
+        ndkVersion "25.1.8937393" 
+
     }
 
     buildTypes {

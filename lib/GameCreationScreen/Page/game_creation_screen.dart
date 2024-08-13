@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/FirstOpeningPage/Page/first_opening_page.dart';
 import 'package:tic_tac_toe/GameCreationScreen/Widget/game_setting_widget.dart';
+import 'package:tic_tac_toe/GameScreen/Page/game_screen.dart';
 import 'package:tic_tac_toe/appBar_widget.dart';
 import 'package:tic_tac_toe/constant.dart';
 
@@ -127,63 +128,88 @@ class _GameCreationScreenState extends State<GameCreationScreen> {
   }
 
   Future<void> addGameToDatabase() async {
-    String gameName = _gameNameController.text;
-    String participant1 = _participant1Controller.text;
-    String participant2 = _participant2Controller.text;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Center(
+          child: CircularProgressIndicator(
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
 
-    final gameData = {
-      "GameName": gameName,
-      "BoardColor": _boardColor.value, // Renk bilgisini int olarak alıyorum
-      "Participant1": participant1,
-      "Participant2": participant2,
-      'createdTime': DateTime.now(),
-    };
+    try {
+      String gameName = _gameNameController.text;
+      String participant1 = _participant1Controller.text;
+      String participant2 = _participant2Controller.text;
 
-    final docRef = await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection("Games")
-        .add(gameData);
+      final gameData = {
+        "GameName": gameName,
+        "BoardColor": _boardColor.value, // Renk bilgisini int olarak alıyorum
+        "Participant1": participant1,
+        "Participant2": participant2,
+        'createdTime': DateTime.now(),
+      };
 
-    await docRef.update({'docId': docRef.id});
-
-    _gameNameController.clear();
-    _participant1Controller.clear();
-    _participant2Controller.clear();
-
-    final gamesRef = FirebaseFirestore.instance
-        .collection("Users")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection("Games")
-        .orderBy('createdTime', descending: true);
-
-    final querySnapshot = await gamesRef.get();
-    pastMatches.clear();
-    for (var doc in querySnapshot.docs) {
-      await FirebaseFirestore.instance
+      final docRef = await FirebaseFirestore.instance
           .collection('Users')
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection("Games")
-          .doc(doc.id)
-          .update({'docId': doc.id});
-      pastMatches.add(doc.data());
-    }
+          .add(gameData);
 
-    Future.delayed(Duration(milliseconds: 500), () async {
-      print("GETDATALİST VERİLERİ BEKLENİYOR..........");
-      await pastMatches.isEmpty
-          ? SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-            )
-          : setState(() {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const FirstOpeningPage(),
-                ),
-              );
-            });
-    });
+      await docRef.update({'docId': docRef.id});
+
+      _gameNameController.clear();
+      _participant1Controller.clear();
+      _participant2Controller.clear();
+
+      final gamesRef = FirebaseFirestore.instance
+          .collection("Users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection("Games")
+          .orderBy('createdTime', descending: true);
+
+      final querySnapshot = await gamesRef.get();
+      pastMatches.clear();
+      for (var doc in querySnapshot.docs) {
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("Games")
+            .doc(doc.id)
+            .update({'docId': doc.id});
+        pastMatches.add(doc.data());
+      }
+
+      Navigator.of(context).pop();
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              GameScreen(player1: participant1, player2: participant2),
+        ),
+      );
+    } catch (e) {
+      Navigator.of(context).pop();
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Hata'),
+          content: Text('Bir hata oluştu. Lütfen tekrar deneyin.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Tamam'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
