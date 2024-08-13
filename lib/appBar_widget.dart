@@ -15,7 +15,7 @@ class AppBarWidget extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return Container(
       width: size.width,
-      height: 70,
+      height: 80,
       alignment: Alignment.center,
       child: Stack(
         children: [
@@ -34,7 +34,10 @@ class AppBarWidget extends StatelessWidget {
           Center(
             child: Text(
               title,
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
           ),
         ],

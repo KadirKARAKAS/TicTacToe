@@ -36,8 +36,9 @@ class _GameCreationScreenState extends State<GameCreationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(252, 251, 249, 1),
+      backgroundColor: Color.fromRGBO(0, 0, 30, 1),
       body: Column(
         children: [
           AppBarWidget(
@@ -51,23 +52,49 @@ class _GameCreationScreenState extends State<GameCreationScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextFormField(
-                    controller: _gameNameController,
-                    decoration: const InputDecoration(
-                      labelText: "Oyun Adı",
-                      border: OutlineInputBorder(),
+                  //--- OYUN ADI ---
+                  Container(
+                    width: size.width / 1,
+                    height: 55,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(13),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 10,
+                          blurStyle: BlurStyle.inner,
+                          color: Colors.grey,
+                          offset: Offset(4, 4),
+                          spreadRadius: 1,
+                        ),
+                      ],
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Oyun adı boş olamaz';
-                      }
-                      return null;
-                    },
+                    child: TextFormField(
+                      controller: _gameNameController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(left: 10, top: 5),
+                        hintText: "Oyun Adı",
+                        border: InputBorder.none,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Oyun adı boş olamaz';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
+                  //--- OYUN ADI BİTİŞ ---
+
                   const SizedBox(height: 20),
+                  //--- ARKA PLAN RENK SEÇME  ---
+
                   const Text(
                     "Tahta Arka Plan Rengi",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                   const SizedBox(height: 10),
                   ColorPickerWidget(
@@ -78,56 +105,112 @@ class _GameCreationScreenState extends State<GameCreationScreen> {
                       });
                     },
                   ),
+                  //--- ARKA PLAN RENK SEÇME BİTİŞ  ---
+
                   const SizedBox(height: 20),
-                  // Text(
-                  //   "Kare Rengi",
-                  //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  // ),
-                  // const SizedBox(height: 10),
-                  // ColorPickerWidget(
-                  //   selectedColor: _boardColor,
-                  //   onColorSelected: (color) {
-                  //     setState(() {
-                  //       _boardColor = color;
-                  //     });
-                  //   },
-                  // ),
-                  TextFormField(
-                    controller: _participant1Controller,
-                    decoration: const InputDecoration(
-                      labelText: "Katılımcı 1",
-                      border: OutlineInputBorder(),
+
+                  // --- 1. OYUNCU ADI ---
+                  Container(
+                    width: size.width / 1,
+                    height: 55,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(13),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 10,
+                          blurStyle: BlurStyle.inner,
+                          color: Colors.grey,
+                          offset: Offset(4, 4),
+                          spreadRadius: 1,
+                        ),
+                      ],
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Katılımcı 1 adı boş olamaz';
-                      }
-                      return null;
-                    },
+                    child: TextFormField(
+                      controller: _participant1Controller,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(left: 10, top: 5),
+                        hintText: "1. Oyuncuyu Giriniz",
+                        border: InputBorder.none,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Katılımcı 1 adı boş olamaz';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
+                  // --- 1. OYUNCU ADI BİTİŞ ---
+
                   const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _participant2Controller,
-                    decoration: const InputDecoration(
-                      labelText: "Katılımcı 2",
-                      border: OutlineInputBorder(),
+                  // --- 2. OYUNCU ADI  ---
+
+                  Container(
+                    width: size.width / 1,
+                    height: 55,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(13),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 10,
+                          blurStyle: BlurStyle.inner,
+                          color: Colors.grey,
+                          offset: Offset(4, 4),
+                          spreadRadius: 1,
+                        ),
+                      ],
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Katılımcı 2 adı boş olamaz';
-                      }
-                      return null;
-                    },
+                    child: TextFormField(
+                      controller: _participant2Controller,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(left: 10, top: 5),
+                        hintText: "2. Oyuncuyu Giriniz",
+                        border: InputBorder.none,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Katılımcı 2 adı boş olamaz';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
+                  // --- 2. OYUNCU ADI BİTİŞ ---
+
                   const SizedBox(height: 20),
                   Center(
-                    child: ElevatedButton(
-                      onPressed: () {
+                    child: InkWell(
+                      onTap: () {
                         if (_formKey.currentState!.validate()) {
                           addGameToDatabase();
                         }
                       },
-                      child: const Text("Oyun Oluştur"),
+                      child: Container(
+                        width: size.width / 2.5,
+                        height: 55,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(13),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 10,
+                              blurStyle: BlurStyle.inner,
+                              color: Colors.grey,
+                              offset: Offset(4, 4),
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                        child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "Oyunu Başlat",
+                              style: TextStyle(
+                                  fontSize: 23, fontWeight: FontWeight.w600),
+                            )),
+                      ),
                     ),
                   ),
                 ],

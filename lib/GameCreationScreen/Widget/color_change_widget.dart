@@ -65,9 +65,12 @@ class ColorPickerWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () => onColorSelected(color),
       child: Container(
-        width: 50,
-        height: 50,
-        color: color,
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.white, width: 1)),
         child: selectedColor == color
             ? const Icon(Icons.check, color: Colors.white)
             : null,
