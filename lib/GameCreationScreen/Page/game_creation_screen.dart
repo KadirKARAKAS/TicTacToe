@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/FirstOpeningPage/Page/first_opening_page.dart';
-import 'package:tic_tac_toe/GameCreationScreen/Widget/game_setting_widget.dart';
+import 'package:tic_tac_toe/GameCreationScreen/Widget/color_change_widget.dart';
 import 'package:tic_tac_toe/GameScreen/Page/game_screen.dart';
 import 'package:tic_tac_toe/appBar_widget.dart';
 import 'package:tic_tac_toe/constant.dart';
@@ -80,6 +79,19 @@ class _GameCreationScreenState extends State<GameCreationScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
+                  // Text(
+                  //   "Kare Rengi",
+                  //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  // ),
+                  // const SizedBox(height: 10),
+                  // ColorPickerWidget(
+                  //   selectedColor: _boardColor,
+                  //   onColorSelected: (color) {
+                  //     setState(() {
+                  //       _boardColor = color;
+                  //     });
+                  //   },
+                  // ),
                   TextFormField(
                     controller: _participant1Controller,
                     decoration: const InputDecoration(
@@ -189,8 +201,10 @@ class _GameCreationScreenState extends State<GameCreationScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              GameScreen(player1: participant1, player2: participant2),
+          builder: (context) => GameScreen(
+              player1: participant1,
+              player2: participant2,
+              boardColor: _boardColor),
         ),
       );
     } catch (e) {
