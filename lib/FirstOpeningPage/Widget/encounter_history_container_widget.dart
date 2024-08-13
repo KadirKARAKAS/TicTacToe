@@ -10,10 +10,11 @@ class EncounterHistoryContainerWidget extends StatelessWidget {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => EncounterHistoryPage(),
-            ));
+          context,
+          MaterialPageRoute(
+            builder: (context) => EncounterHistoryPage(),
+          ),
+        );
       },
       child: Container(
         width: size.width / 1.25,
@@ -31,15 +32,32 @@ class EncounterHistoryContainerWidget extends StatelessWidget {
             ),
           ],
         ),
-        child: Align(
-            alignment: Alignment.center,
-            child: Text(
-              "Karşılaşma Geçmişi",
-              style: TextStyle(
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Image.asset(
+                  'assets/leaderboard.png',
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                "Karşılaşma Geçmişi",
+                style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.w600,
-                  color: Color.fromRGBO(0, 0, 15, 1)),
-            )),
+                  color: Color.fromRGBO(0, 0, 15, 1),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

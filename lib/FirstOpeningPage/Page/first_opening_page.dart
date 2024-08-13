@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/FirstOpeningPage/Widget/center_text_widget.dart';
 import 'package:tic_tac_toe/FirstOpeningPage/Widget/encounter_history_container_widget.dart';
 import 'package:tic_tac_toe/FirstOpeningPage/Widget/start_game_container_widget.dart';
-import 'package:tic_tac_toe/appBar_widget.dart';
 
 class FirstOpeningPage extends StatefulWidget {
   const FirstOpeningPage({super.key});

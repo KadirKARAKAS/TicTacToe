@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../GameCreationScreen/Page/game_creation_screen.dart';
 
 class StartGameContainerWidget extends StatelessWidget {
@@ -11,10 +10,11 @@ class StartGameContainerWidget extends StatelessWidget {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GameCreationScreen(),
-            ));
+          context,
+          MaterialPageRoute(
+            builder: (context) => GameCreationScreen(),
+          ),
+        );
       },
       child: Container(
         width: size.width / 1.25,
@@ -32,15 +32,32 @@ class StartGameContainerWidget extends StatelessWidget {
             ),
           ],
         ),
-        child: Align(
-            alignment: Alignment.center,
-            child: Text(
-              "Karşılaşma Oluştur",
-              style: TextStyle(
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Image.asset(
+                  'assets/playIcon.png',
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                "Karşılaşma Oluştur",
+                style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.w600,
-                  color: Color.fromRGBO(0, 0, 15, 1)),
-            )),
+                  color: Color.fromRGBO(0, 0, 15, 1),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
