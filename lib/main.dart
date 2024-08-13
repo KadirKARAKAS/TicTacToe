@@ -52,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
       await _signInAnonymouslyAndSavePlatformData();
       _navigateToStartGame();
     } else {
-      // await _loadUserData();
+      await _loadUserData();
       _navigateToNextPageBasedOnPets();
     }
   }
@@ -83,11 +83,11 @@ class _SplashScreenState extends State<SplashScreen> {
         .collection("Users")
         .doc(FirebaseAuth.instance.currentUser!.uid);
 
-    final pastMatchesSnapshot = await userRef.collection("Past Matches").get();
+    final pastMatchesSnapshot = await userRef.collection("Games").get();
     pastMatches.addAll(pastMatchesSnapshot.docs.map((doc) => doc.data()));
 
     pastMatches.clear();
-    final pastSnapshot = await userRef.collection("Past Matches").get();
+    final pastSnapshot = await userRef.collection("Games").get();
     pastMatches.addAll(pastSnapshot.docs.map((doc) => doc.data()));
   }
 
@@ -103,6 +103,7 @@ class _SplashScreenState extends State<SplashScreen> {
         );
         print("GEÇMİŞ MAÇ BULUNAMADI");
       } else {
+        print("GEÇMİŞ MAÇLAR LİSTEYE ÇEKİLDİ");
         Navigator.of(context).pushReplacement(
           PageTransition(
             type: PageTransitionType.fade,

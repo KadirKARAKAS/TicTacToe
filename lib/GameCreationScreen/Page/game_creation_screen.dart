@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/FirstOpeningPage/Page/first_opening_page.dart';
+import 'package:tic_tac_toe/GameCreationScreen/Widget/game_setting_widget.dart';
 import 'package:tic_tac_toe/appBar_widget.dart';
 import 'package:tic_tac_toe/constant.dart';
 
@@ -13,10 +14,17 @@ class GameCreationScreen extends StatefulWidget {
 }
 
 class _GameCreationScreenState extends State<GameCreationScreen> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _gameNameController = TextEditingController();
   final TextEditingController _participant1Controller = TextEditingController();
   final TextEditingController _participant2Controller = TextEditingController();
-  Color _boardColor = Colors.white;
+  Color _boardColor = Colors.red;
+
+  @override
+  void initState() {
+    super.initState();
+    _boardColor = Colors.red;
+  }
 
   @override
   void dispose() {
@@ -32,103 +40,85 @@ class _GameCreationScreenState extends State<GameCreationScreen> {
       backgroundColor: const Color.fromRGBO(252, 251, 249, 1),
       body: Column(
         children: [
-          AppBarWidget(title: "Oyun Oluşturma"),
+          AppBarWidget(
+            title: "Oyun Oluşturma",
+            showBackIcon: true,
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  controller: _gameNameController,
-                  decoration: const InputDecoration(
-                    labelText: "Oyun Adı",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  "Tahta Arka Plan Rengi",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => setState(() {
-                        _boardColor = Colors.white;
-                      }),
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        color: Colors.red,
-                        child: _boardColor == Colors.white
-                            ? const Icon(Icons.check, color: Colors.white)
-                            : null,
-                      ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    controller: _gameNameController,
+                    decoration: const InputDecoration(
+                      labelText: "Oyun Adı",
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: () => setState(() {
-                        _boardColor = Colors.blue;
-                      }),
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        color: Colors.blue,
-                        child: _boardColor == Colors.blue
-                            ? const Icon(Icons.check, color: Colors.white)
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: () => setState(() {
-                        _boardColor = Colors.green;
-                      }),
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        color: Colors.green,
-                        child: _boardColor == Colors.green
-                            ? const Icon(Icons.check, color: Colors.white)
-                            : null,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _participant1Controller,
-                  decoration: const InputDecoration(
-                    labelText: "Katılımcı 1",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _participant2Controller,
-                  decoration: const InputDecoration(
-                    labelText: "Katılımcı 2",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      String gameName = _gameNameController.text;
-                      String participant1 = _participant1Controller.text;
-                      String participant2 = _participant2Controller.text;
-                      print('Oyun Adı: $gameName');
-                      print('Tahta Rengi: $_boardColor');
-                      print('Katılımcı 1: $participant1');
-                      print('Katılımcı 2: $participant2');
-                      await addGameToDatabase();
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Oyun adı boş olamaz';
+                      }
+                      return null;
                     },
-                    child: const Text("Oyun Oluştur"),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Tahta Arka Plan Rengi",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  ColorPickerWidget(
+                    selectedColor: _boardColor,
+                    onColorSelected: (color) {
+                      setState(() {
+                        _boardColor = color;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _participant1Controller,
+                    decoration: const InputDecoration(
+                      labelText: "Katılımcı 1",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Katılımcı 1 adı boş olamaz';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _participant2Controller,
+                    decoration: const InputDecoration(
+                      labelText: "Katılımcı 2",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Katılımcı 2 adı boş olamaz';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          addGameToDatabase();
+                        }
+                      },
+                      child: const Text("Oyun Oluştur"),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -143,20 +133,18 @@ class _GameCreationScreenState extends State<GameCreationScreen> {
 
     final gameData = {
       "GameName": gameName,
-      "BoardColor": _boardColor.value, // Renk bilgisini int olarak saklıyoruz
+      "BoardColor": _boardColor.value, // Renk bilgisini int olarak alıyorum
       "Participant1": participant1,
       "Participant2": participant2,
       'createdTime': DateTime.now(),
     };
 
-    // Yeni bir belge oluşturmak için `add()` yöntemini kullanın.
     final docRef = await FirebaseFirestore.instance
         .collection('Users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection("Games")
         .add(gameData);
 
-    // Oluşturulan belgeye docID ekleyin.
     await docRef.update({'docId': docRef.id});
 
     _gameNameController.clear();

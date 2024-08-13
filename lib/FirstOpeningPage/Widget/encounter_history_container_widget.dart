@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/constant.dart';
+import 'package:tic_tac_toe/EncounterHistory/Page/encounter_history_page.dart';
 
 class EncounterHistoryContainerWidget extends StatelessWidget {
   const EncounterHistoryContainerWidget({super.key});
@@ -8,7 +8,11 @@ class EncounterHistoryContainerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        print(pastMatches);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EncounterHistoryPage(),
+            ));
       },
       child: Container(
         width: 150,
