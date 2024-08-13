@@ -1,6 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tic_tac_toe/FirstOpeningPage/Page/first_opening_page.dart';
 import 'package:tic_tac_toe/GameCreationScreen/Page/game_creation_screen.dart';
 
 class GameScreen extends StatefulWidget {
@@ -83,20 +84,26 @@ class _GameScreenState extends State<GameScreen> {
       }
       if (_winner != "") {
         AwesomeDialog(
-            context: context,
-            dialogType: DialogType.success,
-            animType: AnimType.rightSlide,
-            btnOkText: "Tekrar Oyna",
-            title: _winner == "X"
-                ? widget.player1 + " KAZANDI!"
-                : _winner == "O"
-                    ? widget.player2 + " KAZANDI!"
-                    : "Berabere",
-            btnOkOnPress: () {
-              //FİREBASE E KAZANAN OYUNCUYU GÜNCELLEME İŞLEMİ BU KISIMA YAZILCAK
-              _resetGame();
-            })
-          ..show();
+          context: context,
+          dialogType: DialogType.success,
+          animType: AnimType.rightSlide,
+          btnOkText: "Tekrar Oyna",
+          btnCancelText: "Oyundan Çık",
+          title: _winner == "X"
+              ? widget.player1 + " KAZANDI!"
+              : _winner == "O"
+                  ? widget.player2 + " KAZANDI!"
+                  : "Berabere",
+          btnOkOnPress: () {
+            //FİREBASE E KAZANAN OYUNCUYU GÜNCELLEME İŞLEMİ BU KISIMA YAZILCAK
+            _resetGame();
+          },
+          btnCancelOnPress: () {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => FirstOpeningPage()),
+                (Route<dynamic> route) => false);
+          },
+        )..show();
       }
     });
   }

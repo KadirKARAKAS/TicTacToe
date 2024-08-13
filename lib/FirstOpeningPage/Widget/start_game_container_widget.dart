@@ -7,6 +7,7 @@ class StartGameContainerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -16,11 +17,20 @@ class StartGameContainerWidget extends StatelessWidget {
             ));
       },
       child: Container(
-        width: 150,
-        height: 45,
+        width: size.width / 1.25,
+        height: 55,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(13),
-          color: Colors.green,
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 10,
+              blurStyle: BlurStyle.inner,
+              color: Colors.grey,
+              offset: Offset(4, 4),
+              spreadRadius: 1,
+            ),
+          ],
         ),
         child: Align(
             alignment: Alignment.center,
@@ -29,7 +39,7 @@ class StartGameContainerWidget extends StatelessWidget {
               style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white),
+                  color: Color.fromRGBO(0, 0, 15, 1)),
             )),
       ),
     );

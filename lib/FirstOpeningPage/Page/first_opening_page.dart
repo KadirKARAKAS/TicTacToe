@@ -15,18 +15,21 @@ class FirstOpeningPageState extends State<FirstOpeningPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(252, 251, 249, 1),
+      backgroundColor: Color.fromRGBO(0, 0, 15, 1),
       body: Column(
         children: [
-          AppBarWidget(
-            title: "TicTacToe",
-          ),
           Expanded(
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Image.asset(
+                    "assets/homePageLogo.png",
+                    width: 100,
+                    height: 100,
+                  ),
+                  SizedBox(height: 20),
                   CenterTextWidget(),
                   const SizedBox(height: 20),
                   StartGameContainerWidget(),
