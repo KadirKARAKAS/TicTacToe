@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:tic_tac_toe/constant.dart';
 import 'package:tic_tac_toe/firebase_options.dart';
-import 'package:tic_tac_toe/first_opening_page.dart';
+import 'package:tic_tac_toe/FirstOpeningPage/Page/first_opening_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,11 +38,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Ekranın nasıl görüneceğini tanımlayan bir widget dönmelidir.
-    // Örneğin, bir yükleniyor göstergesi döndürebilirsiniz.
     return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(), // Yükleniyor göstergesi
+        child: CircularProgressIndicator(),
       ),
     );
   }
@@ -89,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen> {
     pastMatches.addAll(pastMatchesSnapshot.docs.map((doc) => doc.data()));
 
     pastMatches.clear();
-    final pastSnapshot = await userRef.collection("My Pets").get();
+    final pastSnapshot = await userRef.collection("Past Matches").get();
     pastMatches.addAll(pastSnapshot.docs.map((doc) => doc.data()));
   }
 

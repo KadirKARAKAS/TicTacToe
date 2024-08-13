@@ -10,7 +10,7 @@ class AppBarWidget extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return Container(
       width: size.width,
-      height: 65,
+      height: 70,
       child: Align(
           alignment: Alignment.center,
           child: Text(
