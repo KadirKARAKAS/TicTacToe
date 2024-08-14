@@ -80,7 +80,6 @@ class _GameScreenState extends State<GameScreen> {
       },
       btnCancelOnPress: () {
         _handleGameEnd(result);
-
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -143,6 +142,7 @@ class _GameScreenState extends State<GameScreen> {
 
   Widget _buildGrid() {
     return GridView.builder(
+      padding: EdgeInsets.all(5),
       itemCount: _size * _size,
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -164,7 +164,8 @@ class _GameScreenState extends State<GameScreen> {
               child: Text(
                 _board[row][col],
                 style: TextStyle(
-                  fontSize: 50,
+                  fontSize:
+                      250 / double.parse(widget.boardSize.split("x").first),
                   fontWeight: FontWeight.bold,
                   color: _board[row][col] == "X"
                       ? Color(0xFFE25041)
