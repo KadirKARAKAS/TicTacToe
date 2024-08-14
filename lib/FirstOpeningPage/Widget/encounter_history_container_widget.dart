@@ -12,7 +12,7 @@ class EncounterHistoryContainerWidget extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => EncounterHistoryPage(),
+            builder: (context) => EncounterHistoryScreen(),
           ),
         );
       },

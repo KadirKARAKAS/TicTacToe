@@ -1,21 +1,27 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:tic_tac_toe/FirstOpeningPage/Page/first_opening_page.dart';
 import 'package:tic_tac_toe/GameCreationScreen/Page/game_creation_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GameScreen extends StatefulWidget {
-  String player1;
-  String player2;
-  Color boardColor;
-  GameScreen(
-      {super.key,
-      required this.player1,
-      required this.player2,
-      required this.boardColor});
+  final String player1;
+  final String player2;
+  final Color boardColor;
+  final String boardSize;
+  final String gameID; // Oyun ID'sini widget'a ekleyin
+
+  GameScreen({
+    Key? key,
+    required this.player1,
+    required this.player2,
+    required this.boardColor,
+    required this.boardSize,
+    required this.gameID,
+  }) : super(key: key);
 
   @override
-  State<GameScreen> createState() => _GameScreenState();
+  _GameScreenState createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
@@ -23,24 +29,54 @@ class _GameScreenState extends State<GameScreen> {
   late String _currentPlayer;
   late String _winner;
   late bool _gameOver;
+  late int _size;
 
   @override
   void initState() {
     super.initState();
-    _board = List.generate(3, (_) => List.generate(3, (_) => ""));
+    _initializeGame();
+  }
+
+  void _initializeGame() {
+    _size = int.parse(widget.boardSize.split('x')[0]);
+    _board = List.generate(_size, (_) => List.generate(_size, (_) => ""));
     _currentPlayer = "X";
     _winner = "";
     _gameOver = false;
   }
 
-  // RESET GAME
   void _resetGame() {
     setState(() {
-      _board = List.generate(3, (_) => List.generate(3, (_) => ""));
-      _currentPlayer = "X";
-      _winner = "";
-      _gameOver = false;
+      _initializeGame();
     });
+  }
+
+  Future<void> _handleGameEnd(String result) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection("Games")
+          .doc(widget.gameID)
+          .update({'Winner': result});
+    } catch (e) {
+      print("Oyun sonucu güncellenirken hata oluştu: $e");
+    }
+  }
+
+  void _showResultDialog(String title, String description, String result) {
+    AwesomeDialog(
+      context: context,
+      dialogType: title == 'Kazanan' ? DialogType.success : DialogType.info,
+      animType: AnimType.scale,
+      title: title,
+      desc: description,
+      btnOkOnPress: () {
+        _handleGameEnd(result);
+        _resetGame();
+      },
+      btnOkIcon: title == 'Kazanan' ? Icons.check_circle : Icons.info_outline,
+    ).show();
   }
 
   void _makeMove(int row, int col) {
@@ -50,191 +86,180 @@ class _GameScreenState extends State<GameScreen> {
 
     setState(() {
       _board[row][col] = _currentPlayer;
-      // Kazananı kontrol etme!
 
-      if (_board[row][0] == _currentPlayer &&
-          _board[row][1] == _currentPlayer &&
-          _board[row][2] == _currentPlayer) {
+      if (_checkWinner(row, col)) {
         _winner = _currentPlayer;
         _gameOver = true;
-      } else if (_board[0][col] == _currentPlayer &&
-          _board[1][col] == _currentPlayer &&
-          _board[2][col] == _currentPlayer) {
-        _winner = _currentPlayer;
+        String winnerName =
+            _currentPlayer == "X" ? widget.player1 : widget.player2;
+        _showResultDialog(
+          'Kazanan',
+          'Kazanan: $winnerName',
+          _winner == "X"
+              ? "${widget.player1} KAZANDI!"
+              : "${widget.player2} KAZANDI!",
+        );
+      } else if (!_board.any((row) => row.any((cell) => cell == ""))) {
         _gameOver = true;
-      } else if (_board[0][0] == _currentPlayer &&
-          _board[1][1] == _currentPlayer &&
-          _board[2][2] == _currentPlayer) {
-        _winner = _currentPlayer;
-        _gameOver = true;
-      } else if (_board[0][2] == _currentPlayer &&
-          _board[1][1] == _currentPlayer &&
-          _board[2][0] == _currentPlayer) {
-        _winner = _currentPlayer;
-        _gameOver = true;
-      }
-
-      // Oyuncu sırası değiştirme
-      _currentPlayer = _currentPlayer == "X" ? "O" : "X";
-
-      // Beraberlik kontrolü
-      if (!_board.any((row) => row.any((cell) => cell == ""))) {
-        _gameOver = true;
-        _winner = "Berabere";
-      }
-      if (_winner != "") {
-        AwesomeDialog(
-          context: context,
-          dialogType: DialogType.success,
-          animType: AnimType.rightSlide,
-          btnOkText: "Tekrar Oyna",
-          btnCancelText: "Oyundan Çık",
-          title: _winner == "X"
-              ? widget.player1 + " KAZANDI!"
-              : _winner == "O"
-                  ? widget.player2 + " KAZANDI!"
-                  : "Berabere",
-          btnOkOnPress: () {
-            //FİREBASE E KAZANAN OYUNCUYU GÜNCELLEME İŞLEMİ BU KISIMA YAZILCAK
-            _resetGame();
-          },
-          btnCancelOnPress: () {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => FirstOpeningPage()),
-                (Route<dynamic> route) => false);
-          },
-        )..show();
+        _winner = "Draw";
+        _showResultDialog(
+          'Beraberlik',
+          'Oyun Beraber!',
+          "Beraberlik",
+        );
+      } else {
+        _currentPlayer = _currentPlayer == "X" ? "O" : "X";
       }
     });
+  }
+
+  bool _checkWinner(int row, int col) {
+    String player = _board[row][col];
+
+    if (_board[row].every((cell) => cell == player)) return true;
+    if (_board.every((r) => r[col] == player)) return true;
+
+    bool diagonal1 = true;
+    bool diagonal2 = true;
+
+    for (int i = 0; i < _size; i++) {
+      if (_board[i][i] != player) diagonal1 = false;
+      if (_board[i][_size - 1 - i] != player) diagonal2 = false;
+    }
+
+    return diagonal1 || diagonal2;
+  }
+
+  Widget _buildGrid() {
+    return GridView.builder(
+      itemCount: _size * _size,
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: _size,
+      ),
+      itemBuilder: (context, index) {
+        int row = index ~/ _size;
+        int col = index % _size;
+        return GestureDetector(
+          onTap: () => _makeMove(row, col),
+          child: Container(
+            margin: EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(
+                _board[row][col],
+                style: TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold,
+                  color: _board[row][col] == "X"
+                      ? Color(0xFFE25041)
+                      : Color(0xFF1CBD9E),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(252, 251, 249, 1),
+      backgroundColor: Color.fromRGBO(0, 0, 15, 1),
       body: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            SizedBox(height: 70),
-            SizedBox(
-              height: 120,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Oynama Sırası: ",
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
-                      Text(
-                        _currentPlayer == "X"
-                            ? widget.player1 + " ($_currentPlayer)"
-                            : widget.player2 + " ($_currentPlayer)",
-                        style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: _currentPlayer == "X"
-                                ? Color(0xFFE25041)
-                                : Color(0xFF1CBD9E)),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                ],
-              ),
-            ),
+            SizedBox(height: 100),
+            _buildCurrentPlayerInfo(),
             SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
-                color: widget.boardColor, // OYUN TAHTASI RENGİ AYARLAMA
+                color: widget.boardColor,
                 borderRadius: BorderRadius.circular(10),
               ),
               margin: EdgeInsets.all(5),
-              child: GridView.builder(
-                itemCount: 9,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3),
-                itemBuilder: (context, index) {
-                  int row = index ~/ 3;
-                  int col = index % 3;
-                  return GestureDetector(
-                    onTap: () => _makeMove(row, col),
-                    child: Container(
-                      margin: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(_board[row][col],
-                            style: TextStyle(
-                                fontSize: 120,
-                                fontWeight: FontWeight.bold,
-                                color: _board[row][col] == "X"
-                                    ? Color(0xFFE25041)
-                                    : Color(0xFF1CBD9E))),
-                      ),
-                    ),
-                  );
-                },
-              ),
+              child: _buildGrid(),
             ),
             SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                InkWell(
-                  onTap: _resetGame,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                    child: Text(
-                      "Sıfırla!",
-                      style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => GameCreationScreen(),
-                      ),
-                    );
-                    widget.player1 = "";
-                    widget.player2 = "";
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                    child: Text(
-                      "Yeni Oyun!",
-                      style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                  ),
-                )
-              ],
-            )
+            _buildActionButtons(),
+            SizedBox(height: 100),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurrentPlayerInfo() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Oynama Sırası: ",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              _currentPlayer == "X"
+                  ? "${widget.player1} ($_currentPlayer)"
+                  : "${widget.player2} ($_currentPlayer)",
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: _currentPlayer == "X"
+                    ? Color(0xFFE25041)
+                    : Color(0xFF1CBD9E),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildActionButton("Sıfırla!", _resetGame),
+        _buildActionButton("Yeni Oyun!", () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GameCreationScreen(),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildActionButton(String label, VoidCallback onPressed) {
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.green,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
     );

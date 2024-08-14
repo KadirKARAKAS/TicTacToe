@@ -1,111 +1,115 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // intl paketini import edin
+import 'package:intl/intl.dart';
 import 'package:tic_tac_toe/appBar_widget.dart';
-import 'package:tic_tac_toe/constant.dart';
 
-class EncounterHistoryPage extends StatefulWidget {
-  const EncounterHistoryPage({super.key});
+class EncounterHistoryScreen extends StatelessWidget {
+  const EncounterHistoryScreen({super.key});
 
-  @override
-  State<EncounterHistoryPage> createState() => _EncounterHistoryPageState();
-}
-
-class _EncounterHistoryPageState extends State<EncounterHistoryPage> {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Color.fromRGBO(0, 0, 15, 1),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppBarWidget(
             title: "Karşılaşma Geçmişi",
             showBackIcon: true,
           ),
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.only(top: 0),
-              itemCount: pastMatches.length,
-              itemBuilder: (context, index) {
-                final match = pastMatches[index];
-                return ListTile(
-                  title: Text('Oyun: ${match['GameName'] ?? 'Bilinmiyor'}'),
-                  subtitle: Text(
-                    'Tarih: ${_formatDate(match['createdTime'])}\n'
-                    'Katılımcı 1: ${match['Participant1'] ?? 'Bilinmiyor'}\n'
-                    'Katılımcı 2: ${match['Participant2'] ?? 'Bilinmiyor'}',
-                  ),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    _showMatchDetailDialog(context, match);
-                  },
-                );
-              },
-            ),
-          ),
+          _buildGameList(size),
         ],
       ),
     );
   }
 
-  String _formatDate(Timestamp? timestamp) {
-    if (timestamp == null) return 'Bilinmiyor';
+  Expanded _buildGameList(Size size) {
+    return Expanded(
+      child: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("Games")
+            .orderBy('createdTime', descending: true)
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(child: Text('Geçmişte oynanmış bir oyun yok.'));
+          }
 
-    DateTime dateTime = timestamp.toDate();
-    DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm');
-    return dateFormat.format(dateTime);
-  }
+          final gameDocs = snapshot.data!.docs;
+          return ListView.builder(
+            padding: EdgeInsets.only(top: 0),
+            itemCount: gameDocs.length,
+            itemBuilder: (context, index) {
+              final gameData = gameDocs[index].data() as Map<String, dynamic>;
+              final boardSize = gameData['BoardSize'];
+              final winner = gameData['Winner'] ?? 'Henüz belirlendi';
+              final createdTime =
+                  (gameData['createdTime'] as Timestamp).toDate().toLocal();
+              final formattedDate =
+                  DateFormat('yyyy-MM-dd – kk:mm').format(createdTime);
 
-  void _showMatchDetailDialog(
-      BuildContext context, Map<String, dynamic> match) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            'Maç Detayları',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
+              return Padding(
+                padding: const EdgeInsets.only(right: 10, left: 10, bottom: 15),
+                child: Container(
+                  width: size.width,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(13),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 10,
+                        blurStyle: BlurStyle.inner,
+                        color: Colors.grey,
+                        offset: Offset(4, 4),
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildDetailRow("Oyun Adı:", gameData['GameName']),
+                      _buildDetailRow("Katılımcılar:",
+                          "${gameData['Participant1']} ve ${gameData['Participant2']}"),
+                      _buildDetailRow("Tahta Boyutu:", boardSize),
+                      _buildDetailRow("Kazanan:", winner),
+                      _buildDetailRow(
+                          "Oyun Oluşturulma Tarihi:", formattedDate),
+                    ],
+                  ),
                 ),
-          ),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                _buildDetailText(
-                    'Oyun Adı: ${match['GameName'] ?? 'Bilinmiyor'}'),
-                _buildDetailText('Tarih: ${_formatDate(match['createdTime'])}'),
-                _buildDetailText(
-                    'Katılımcı 1: ${match['Participant1'] ?? 'Bilinmiyor'}'),
-                _buildDetailText(
-                    'Katılımcı 2: ${match['Participant2'] ?? 'Bilinmiyor'}'),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'Kapat',
-                style: TextStyle(color: Theme.of(context).primaryColor),
-              ),
-            ),
-          ],
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildDetailText(String text) {
+  Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 16,
-          color: Colors.black54,
-        ),
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Text(
+            "$label ",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(fontSize: 15),
+            ),
+          ),
+        ],
       ),
     );
   }
