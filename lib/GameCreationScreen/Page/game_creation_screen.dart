@@ -32,7 +32,7 @@ class _GameCreationScreenState extends State<GameCreationScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Color.fromRGBO(0, 0, 15, 1),
+      backgroundColor: Color.fromRGBO(0, 0, 25, 1),
       body: Column(
         children: [
           AppBarWidget(

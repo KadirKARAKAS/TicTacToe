@@ -1,6 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tic_tac_toe/FirstOpeningPage/Page/first_opening_page.dart';
 import 'package:tic_tac_toe/GameCreationScreen/Page/game_creation_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -9,7 +10,7 @@ class GameScreen extends StatefulWidget {
   final String player2;
   final Color boardColor;
   final String boardSize;
-  final String gameID; // Oyun ID'sini widget'a ekleyin
+  final String gameID;
 
   GameScreen({
     Key? key,
@@ -71,11 +72,19 @@ class _GameScreenState extends State<GameScreen> {
       animType: AnimType.scale,
       title: title,
       desc: description,
+      btnOkText: "Yeniden Oyna",
+      btnCancelText: "Oyundan Çık",
       btnOkOnPress: () {
         _handleGameEnd(result);
         _resetGame();
       },
-      btnOkIcon: title == 'Kazanan' ? Icons.check_circle : Icons.info_outline,
+      btnCancelOnPress: () {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FirstOpeningPage(),
+            ));
+      },
     ).show();
   }
 
@@ -170,7 +179,7 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(0, 0, 15, 1),
+      backgroundColor: Color.fromRGBO(0, 0, 25, 1),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

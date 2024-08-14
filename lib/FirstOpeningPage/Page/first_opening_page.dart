@@ -14,7 +14,7 @@ class FirstOpeningPageState extends State<FirstOpeningPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(0, 0, 15, 1),
+      backgroundColor: Color.fromRGBO(0, 0, 25, 1),
       body: Column(
         children: [
           Expanded(
