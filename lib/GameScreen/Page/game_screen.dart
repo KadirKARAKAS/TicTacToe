@@ -79,6 +79,8 @@ class _GameScreenState extends State<GameScreen> {
         _resetGame();
       },
       btnCancelOnPress: () {
+        _handleGameEnd(result);
+
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
