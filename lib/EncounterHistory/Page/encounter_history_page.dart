@@ -39,7 +39,14 @@ class EncounterHistoryScreen extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('Geçmişte oynanmış bir oyun yok.'));
+            return Center(
+                child: Text(
+              'Geçmişte oynanmış bir oyun yok.',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 23),
+            ));
           }
 
           final gameDocs = snapshot.data!.docs;

@@ -140,6 +140,34 @@ class _GameScreenState extends State<GameScreen> {
     return diagonal1 || diagonal2;
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromRGBO(0, 0, 25, 1),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            SizedBox(height: 100),
+            _buildCurrentPlayerInfo(),
+            SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                color: widget.boardColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              margin: EdgeInsets.all(5),
+              child: _buildGrid(),
+            ),
+            SizedBox(height: 15),
+            _buildActionButtons(),
+            SizedBox(height: 100),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildGrid() {
     return GridView.builder(
       padding: EdgeInsets.all(5),
@@ -176,34 +204,6 @@ class _GameScreenState extends State<GameScreen> {
           ),
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromRGBO(0, 0, 25, 1),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            SizedBox(height: 100),
-            _buildCurrentPlayerInfo(),
-            SizedBox(height: 20),
-            Container(
-              decoration: BoxDecoration(
-                color: widget.boardColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              margin: EdgeInsets.all(5),
-              child: _buildGrid(),
-            ),
-            SizedBox(height: 15),
-            _buildActionButtons(),
-            SizedBox(height: 100),
-          ],
-        ),
-      ),
     );
   }
 
