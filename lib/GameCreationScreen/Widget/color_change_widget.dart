@@ -1,43 +1,5 @@
 import 'package:flutter/material.dart';
 
-class GameNameTextField extends StatelessWidget {
-  final TextEditingController controller;
-
-  const GameNameTextField({Key? key, required this.controller})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      decoration: const InputDecoration(
-        labelText: "Oyun Adı",
-        border: OutlineInputBorder(),
-      ),
-    );
-  }
-}
-
-class ParticipantTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-
-  const ParticipantTextField(
-      {Key? key, required this.controller, required this.label})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-    );
-  }
-}
-
 class ColorPickerWidget extends StatelessWidget {
   final Color selectedColor;
   final ValueChanged<Color> onColorSelected;
