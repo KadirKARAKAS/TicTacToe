@@ -9,9 +9,20 @@ Bu uygulama, tek bir telefonda iki kişi tarafından oynanabilen klasik Tic Tac 
 - **Oyun Ekranı**: Standart Tic Tac Toe kuralları çerçevesinde oyununuzu oynayın.
 - **Karşılaşma Geçmişi**: Daha önce yapılmış karşılaşmaları görüntüleyebilir; oyun adı, tahtanın boyutu, katılımcılar, oyun oynanan saat ve kazanan kişinin bilgilerini görebilirsiniz.
 
-## Kurulum
+## Kurulum ve Çalıştırma
 
-1. Bu repo'yu bilgisayarınıza klonlayın:
+Bu adımları izleyerek projeyi bilgisayarınıza indirip çalıştırabilirsiniz:
+
+1. **Projeyi Klonlayın**
+
+   Öncelikle, projeyi GitHub'dan bilgisayarınıza klonlayın. Terminal veya komut satırına aşağıdaki komutu yazın:
 
    ```bash
-   git clone https://github.com/kullanici-adi/tic-tac-toe-uygulamasi.git
+   git clone https://github.com/KadirKARAKAS/TicTacToe.git
+
+2. **Paketleri Kurun**
+
+   Komut satırına aşağıdaki komutu yazın:
+
+   ```bash
+   flutter pub get
